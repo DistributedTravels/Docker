@@ -1,0 +1,30 @@
+version: "3"
+name: "distributed-travels" # app name (ALL whitespaces are stripped)
+services: # services / containers
+# custom services will require Dockerfiles
+  # service Oferts
+  # service Hotels
+  # service Transport
+  # service Reservations
+  # service Payments
+  # service WebAPI
+  # service Frontend
+  # service DB
+  rabbitmq: # broker service from default image
+    image: rabbitmq:3-management # management for web interface on port 15672
+    container_name: 'rabbitmq' # container name
+    hostname: 'rabbitmq' # host name, otherwise it's random alphanum string
+    ports: # port forwarding
+        - 5672:5672 # normal communication
+        - 15672:15672 # web interface
+    networks:
+        - backend # connected networks
+
+networks: # defining networks
+  frontend: # network for Api - website communication
+    driver: bridge # "overlay" for swarm mode?
+  backend: # network for the rest of communication
+    driver: bridge # "overlay" for swarm mode?
+
+#volumes: # storage volumes
+#  mariadb: {}
