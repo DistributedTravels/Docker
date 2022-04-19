@@ -4,11 +4,30 @@ services: # services / containers
 # custom services will require Dockerfiles
   # service Oferts
   # service Hotels
-  # service Transport
+  transport:
+    build: ../../Transport/
+    hostname: 'transport'
+    container_name: 'transport'
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8010:80
+    networks:
+      - backend
   # service Reservations
   # service Payments
   # service WebAPI
   # service Frontend
+  test:
+    build: ../../TestASPWebApi/TestASPWebApi/
+    hostname: 'test'
+    container_name: 'test'
+    depends_on:
+      - rabbitmq
+    ports:
+      - 8000:80
+    networks:
+      - backend
   mariadb:
   # https://hub.docker.com/_/mariadb
     image: mariadb:10.8
