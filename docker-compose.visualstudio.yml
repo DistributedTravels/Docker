@@ -2,8 +2,8 @@ version: "3"
 name: "distributed-travels" # app name (ALL whitespaces are stripped)
 services: # services / containers
 # custom services will require Dockerfiles
-  # service Oferts
-  # service Hotels
+  # service Oferts #
+  # service Hotels #
   transport:
     image: ${DOCKER_REGISTRY-}transport
     build:
@@ -32,9 +32,9 @@ services: # services / containers
       - 8020:80
     networks:
       - backend
-  # service Payments
-  # service WebAPI
-  # service Frontend
+  # service Payments #
+  # service WebAPI #
+  # service Frontend #
   mariadb:
   # https://hub.docker.com/_/mariadb
     image: mariadb:10.8
@@ -82,4 +82,5 @@ networks: # defining networks
 
 volumes: # storage volumes
   mariadb: {} 
+
 

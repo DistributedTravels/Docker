@@ -98,8 +98,10 @@ As the Visual Studio docker-compose doesn't exactly work the same way as command
   </PropertyGroup>
 </Project>
 ```
+-------------------------------
+When deleting VS created containers from docker-compose file, check if it's also deleted from  `docker-compose.override.yml` file, since VS also adds lines there
 
 -------------------------------
-possibly wrong steps to disable browser launching
+### Possibly incorrect instructions
 
 VS starts browser to specified address when launching debugging for container/ASP.NET projects. This can be disabled in debug options: Project > Properties > Debug > uncheck Launch browser for Docker version of debugging.
