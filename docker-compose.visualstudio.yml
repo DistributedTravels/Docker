@@ -45,6 +45,7 @@ services: # services / containers
     ports:
       - 3306:3306
     volumes:
+      - ./Docker/init/db:docker-entrypoint-initdb.d
       - mariadb:/var/lib/mysql
     networks:
       backend:
