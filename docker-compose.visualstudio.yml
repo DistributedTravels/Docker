@@ -28,6 +28,7 @@ services: # services / containers
     container_name: 'reservation'
     depends_on:
       - rabbitmq
+      - mariadb
     ports:
       - 8020:80
     networks:
@@ -37,7 +38,7 @@ services: # services / containers
   # service Frontend #
   mariadb:
   # https://hub.docker.com/_/mariadb
-    image: mariadb:10.8
+    image: mariadb:10.4
     hostname: 'mariadb'
     container_name: 'mariadb'
     environment:
@@ -45,8 +46,8 @@ services: # services / containers
     ports:
       - 3306:3306
     volumes:
-      - ./Docker/init/db:docker-entrypoint-initdb.d
-      - mariadb:/var/lib/mysql
+      - ./Docker/init/db:/docker-entrypoint-initdb.d
+      #- mariadb:/var/lib/mysql
     networks:
       backend:
         aliases:
@@ -81,7 +82,7 @@ networks: # defining networks
   frontend: {} # network for Api - website communication
   backend: {} # network for the rest of communication
 
-volumes: # storage volumes
-  mariadb: {} 
+#volumes: # storage volumes
+#  mariadb: {} 
 
 
