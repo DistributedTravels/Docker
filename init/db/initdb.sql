@@ -1,11 +1,11 @@
-Drop USER IF EXISTS Transport;
-CREATE USER Transport@'%' IDENTIFIED BY 'transport';
-DROP DATABASE IF EXISTS Transport;
-CREATE DATABASE Transport;
-GRANT ALL PRIVILEGES ON Transport.* TO Transport@'%';
+DROP USER IF EXISTS transport;
+CREATE USER transport WITH PASSWORD 'transport';
+DROP DATABASE IF EXISTS transport;
+CREATE DATABASE transport;
+GRANT ALL PRIVILEGES ON DATABASE transport TO transport;
 
-Drop USER IF EXISTS Reservation;
-CREATE USER Reservation@'%' IDENTIFIED BY 'reservation';
-DROP DATABASE IF EXISTS Reservation;
-CREATE DATABASE Reservation;
-GRANT ALL PRIVILEGES ON Reservation.* TO Reservation@'%';
+DROP USER IF EXISTS reservation;
+CREATE USER reservation WITH PASSWORD 'reservation';
+DROP DATABASE IF EXISTS reservation;
+CREATE DATABASE reservation;
+GRANT ALL PRIVILEGES ON DATABASE reservation TO reservation;

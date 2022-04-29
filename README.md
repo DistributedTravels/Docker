@@ -102,6 +102,9 @@ As the Visual Studio docker-compose doesn't exactly work the same way as command
 `init/` contains initialisation files for different containers.
 
 `init/db/` contains init file for mariadb with Database and User definitions for each service (all services to be added...)
+
+***for postgres connection string, use lowercase names of users/database***"
+
 -------------------------------
 When deleting VS created containers from docker-compose file, check if it's also deleted from  `docker-compose.override.yml` file, since VS also adds lines there
 

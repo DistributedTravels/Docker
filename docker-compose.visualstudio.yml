@@ -13,7 +13,7 @@ services: # services / containers
     container_name: 'transport'
     depends_on:
       - rabbitmq
-      - mariadb
+      - postgres
     ports:
       - 8010:80
     networks:
@@ -28,7 +28,7 @@ services: # services / containers
     container_name: 'reservation'
     depends_on:
       - rabbitmq
-      - mariadb
+      - postgres
     ports:
       - 8020:80
     networks:
@@ -36,34 +36,38 @@ services: # services / containers
   # service Payments #
   # service WebAPI #
   # service Frontend #
-  mariadb:
-  # https://hub.docker.com/_/mariadb
-    image: mariadb:10.4
-    hostname: 'mariadb'
-    container_name: 'mariadb'
-    environment:
-      - MARIADB_ROOT_PASSWORD=test # required root password, to change
+  postgres:
+  # https://hub.docker.com/_/postgres
+    image: postgres:14.2
+    hostname: 'postgres'
+    container_name: 'postgres'
     ports:
-      - 3306:3306
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test # required password, to change
+      - POSTGRES_HOST_AUTH_METHOD=md5
     volumes:
       - ./Docker/init/db:/docker-entrypoint-initdb.d
-      #- mariadb:/var/lib/mysql
+      #- psql:/var/lib/mysql
     networks:
       backend:
         aliases:
-          - mysql
+          - psql
 
-  phpmyadmin:
-  # https://hub.docker.com/_/phpmyadmin
-    image: phpmyadmin
-    hostname: 'phpmyadmin'
-    container_name: 'phpmyadmin'
+  adminer:
+  # https://hub.docker.com/_/adminer
+    image: adminer:latest
+    hostname: 'adminer'
+    container_name: 'adminer'
     depends_on: # specifies order of start-up
-      - mariadb
+      - postgres
     ports:
-      - 8080:80
+      - 8080:8080
     environment:
-      - PMA_ARBITRARY=1 # allows for specifying server on login page
+      - ADMINER_DEFAULT_SERVER=psql
+      - ADMINER_DESIGN=hydra
     networks:
       - backend
   
@@ -83,6 +87,6 @@ networks: # defining networks
   backend: {} # network for the rest of communication
 
 #volumes: # storage volumes
-#  mariadb: {} 
+#  psql: {} 
 
 
