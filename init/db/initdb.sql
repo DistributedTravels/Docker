@@ -9,3 +9,9 @@ CREATE USER reservation WITH PASSWORD 'reservation';
 DROP DATABASE IF EXISTS reservation;
 CREATE DATABASE reservation;
 GRANT ALL PRIVILEGES ON DATABASE reservation TO reservation;
+
+DROP USER IF EXISTS offers;
+CREATE USER offers WITH PASSWORD 'offers';
+DROP DATABASE IF EXISTS offers;
+CREATE DATABASE offers;
+GRANT ALL PRIVILEGES ON DATABASE offers TO offers;
