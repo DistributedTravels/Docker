@@ -1,0 +1,134 @@
+version: "3"
+services: # services / containers
+# custom services will require Dockerfiles
+  # service Oferts #
+  # service Hotels #
+  #transport:
+  #  image: ${DOCKER_REGISTRY-}transport
+  #  build:
+  #    context: .
+  #    dockerfile: Transport/Dockerfile
+  #  hostname: 'transport'
+  #  container_name: 'transport'
+  #  depends_on:
+  #    - rabbitmq
+  #    - postgres
+  #  ports:
+  #    - 8010:80
+  #  networks:
+  #    - backend
+
+  reservation:
+    image: ${DOCKER_REGISTRY-}reservation
+    build:
+      context: .
+      dockerfile: Reservation/Dockerfile
+    hostname: 'reservation'
+    container_name: 'reservation'
+    depends_on:
+      - rabbitmq
+      - postgres
+    ports:
+      - 8020:80
+    networks:
+      - backend
+
+  offers:
+    image: ${DOCKER_REGISTRY-}offers
+    container_name: 'offers'
+    build:
+      context: .
+      dockerfile: Offers\Dockerfile
+    depends_on:
+      - rabbitmq
+      - postgres
+    ports:
+      - 8030:80
+    networks:
+      - backend
+  # service Payments #
+  # service WebAPI #
+  # service Frontend #
+  frontend:
+    container_name: frontend
+    build:
+      context: .\Frontend\Client\ClientApp
+      dockerfile: Dockerfile
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - './Frontend/Client/ClientApp:/app'
+      - '/app/node_modules'
+    depends_on:
+      - webapi
+    ports:
+      - 3000:44438
+    networks:
+      - backend
+  postgres:
+  # https://hub.docker.com/_/postgres
+    image: postgres:14.2
+    hostname: 'postgres'
+    container_name: 'postgres'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test # required password, to change
+      - POSTGRES_HOST_AUTH_METHOD=md5
+    volumes:
+      - ./Docker/init/db:/docker-entrypoint-initdb.d
+      #- psql:/var/lib/mysql
+    networks:
+      backend:
+        aliases:
+          - psql
+
+  adminer:
+  # https://hub.docker.com/_/adminer
+    image: adminer:latest
+    hostname: 'adminer'
+    container_name: 'adminer'
+    depends_on: # specifies order of start-up
+      - postgres
+    ports:
+      - 8080:8080
+    environment:
+      - ADMINER_DEFAULT_SERVER=psql
+      - ADMINER_DESIGN=hydra
+    networks:
+      - backend
+  
+  rabbitmq: # broker service from default image
+  # https://hub.docker.com/_/rabbitmq
+    image: rabbitmq:3-management # management for web interface on port 15672
+    hostname: 'rabbitmq' # host name, otherwise it's random alphanum string
+    container_name: 'rabbitmq' # container name
+    ports: # port forwarding
+        - 5672:5672 # normal communication
+        - 15672:15672 # web interface
+    networks:
+        - backend # connected networks
+
+  webapi:
+    image: ${DOCKER_REGISTRY-}webapi
+    build:
+      context: .
+      dockerfile: WebAPI/WebAPI/Dockerfile
+    depends_on:
+      - rabbitmq
+      - postgres
+    ports:
+      - 8090:80
+    networks:
+      - backend
+networks: # defining networks
+  frontend: {} # network for Api - website communication
+  backend: {} # network for the rest of communication
+
+#volumes: # storage volumes
+#  psql: {} 
+
+
+
