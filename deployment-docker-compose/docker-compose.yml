@@ -1,0 +1,144 @@
+version: "3"
+services: # services / containers
+# custom services will require Dockerfiles
+  # service Oferts #
+  # service Hotels #
+  transport:
+    image: quetzonarch/distributedtravels_transport
+    #build: ./Transport
+    hostname: 'transport'
+    container_name: 'transport'
+    depends_on:
+      - rabbitmq
+      - postgres
+    #ports:
+    #  - 8010:80
+    networks:
+      - backend
+
+  reservation:
+    image: quetzonarch/distributedtravels_reservation
+    #build: ./Reservation
+    hostname: 'reservation'
+    container_name: 'reservation'
+    depends_on:
+      - rabbitmq
+      - postgres
+    #ports:
+    #  - 8020:80
+    networks:
+      - backend
+  # service Payments #
+  # service WebAPI #
+  # service Frontend #
+  postgres:
+  # https://hub.docker.com/_/postgres
+    image: postgres:14.2
+    hostname: 'postgres'
+    container_name: 'postgres'
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test # required password, to change
+      - POSTGRES_HOST_AUTH_METHOD=md5
+    volumes:
+      - ./Docker/init/db:/docker-entrypoint-initdb.d
+      #- psql:/var/lib/mysql
+    networks:
+      backend:
+        aliases:
+          - psql
+
+  adminer:
+  # https://hub.docker.com/_/adminer
+    image: adminer:latest
+    hostname: 'adminer'
+    container_name: 'adminer'
+    depends_on: # specifies order of start-up
+      - postgres
+    ports:
+      - 8180:8080
+    environment:
+      - ADMINER_DEFAULT_SERVER=psql
+      - ADMINER_DESIGN=hydra
+    networks:
+      - backend
+  
+  rabbitmq: # broker service from default image
+  # https://hub.docker.com/_/rabbitmq
+    image: heidiks/rabbitmq-delayed-message-exchange:latest # management for web interface on port 15672
+    hostname: 'rabbitmq' # host name, otherwise it's random alphanum string
+    container_name: 'rabbitmq' # container name
+    ports: # port forwarding
+        - 5672:5672 # normal communication
+        - 15672:15672 # web interface
+    networks:
+        - backend # connected networks
+
+  offers:
+    image: quetzonarch/distributedtravels_offers
+    #build: ./Offers
+    hostname: 'offers'
+    container_name: 'offers'
+    depends_on:
+      - rabbitmq
+      - postgres
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - backend
+
+  webapi:
+    image: quetzonarch/distributedtravels_webapi
+    #build: ./Webapi/WebAPI
+    depends_on:
+      - rabbitmq
+      - postgres
+    ports:
+      - 8090:80
+    networks:
+      - backend
+
+  payments:
+    image: quetzonarch/distributedtravels_payments
+    #build: ./Payments
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - backend
+
+  hotels:
+    image: quetzonarch/distributedtravels_hotels
+    #build: ./Hotels
+    depends_on:
+      - rabbitmq
+      - postgres
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+    networks:
+      - backend
+
+  frontend:
+    image: quetzonarch/distributedtravels_frontend
+    #build: ./Frontend
+    depends_on:
+      - rabbitmq
+      - postgres
+      - webapi
+    ports:
+      - 8280:44438
+    networks:
+      - backend
+
+networks: # defining networks
+  frontend: {} # network for Api - website communication
+  backend: {} # network for the rest of communication
+
+#volumes: # storage volumes
+#  psql: {} 
+
+
+
